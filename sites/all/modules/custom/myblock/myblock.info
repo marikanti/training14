@@ -1,0 +1,7 @@
+name = myblock
+description = This is a sample Custom Module to output block
+core = 7.x
+package = Navi’s Custom Module
+version = “7.x-2.0.1”
+
+
