@@ -1,0 +1,77 @@
+<?php
+
+include_once 'my_post_pager1.features.inc';
+  /* hook_menu*/
+  function my_post_pager_menu() {
+    $items = array();
+    $items['my_post_pager'] = array (
+      'page callback' => 'my_post_pager',
+      'access arguments' => array('access content'),
+    );
+    return $items;
+  }
+  /* List of Articles*/
+  function my_post_pager() {
+    $query = db_select('node','n')->extend('PagerDefault');
+    $query
+        ->condition('type','article')
+        ->fields('n',array('title' ))
+        ->limit(3);
+    $result = $query->execute();
+    $output='';
+    $output = "<ul>\n";
+    foreach ($result as $row) {
+      $output .= "<li>\n";
+      $output .= "<h2>".$row->title."</h2>\n";
+    }
+    $output .= "<ul>\n";
+    $output .= theme('pager');
+    $block = module_invoke('my_post_pager', 'block_view', 'my_post_pager');
+    $output .= $block['subject'];
+    $output .= $block['content'];
+    return $output;
+  }
+  /* Creating a Block*/
+  function my_post_pager_block_info() {
+    $blocks = array();
+    $blocks['my_post_pager']['info'] = t('My Post Block');
+    return $blocks;
+   }
+
+  function my_post_pager_block_view($delta ='') {
+    $block = array();
+    switch($delta){
+      case 'my_post_pager';
+        $block['subject'] = t('My Post Block');
+        $block['content'] = custom_post_block_list();
+        break;
+    }
+    return $block;
+  }
+ 
+  function custom_post_block_list() {
+     
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+          ->entityCondition('bundle', 'article')
+          ->propertyCondition('status', NODE_PUBLISHED)
+          ->propertyOrderBy('created', 'DESC')
+          ->range(0, 5);
+    $result = $query->execute();
+    if(isset($result['node'])) {
+      $custom_items_nids = array_keys($result['node']);
+      $custom_items = entity_load('node',$custom_items_nids);
+    }
+    $output = "<ul>\n";
+    foreach($custom_items as $custom_item){
+      $snippet = "<li>\n";
+      $snippet .= "<h2>".t($custom_item->title)."</h2>\n";
+      $output .= $snippet;
+    }
+    $output .= "<ul>\n";
+    return $output;
+  }
+
+ 
+
+  

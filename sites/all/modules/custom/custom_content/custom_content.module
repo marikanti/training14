@@ -1,0 +1,73 @@
+<?php
+/**
+ * @file
+ * Code for the Custom content feature.
+ */
+
+include_once 'custom_content.features.inc';
+
+
+
+/**
+ * @file
+ * RAJ
+ */
+/**
+ * Implements hook_menu().
+ */
+function custom_content_menu() {
+
+  $items['mypage'] = array(
+    'type' => MENU_NORMAL_ITEM,
+    'title' => t('My Custom Page'),
+    'description' => 'My custom page',
+    'page callback' => 'custom_content_recent_articles',
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+/**
+ * Page callback
+ * node type page == BASIC PAGE
+ */
+
+function custom_content_recent_articles($content_type="page") {
+  $query = new EntityFieldQuery();
+  $entities = $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', $content_type)
+    ->propertyCondition('status', 1)
+    ->execute();
+
+  $nodes = entity_load('node', array_keys($entities['node']));
+  // return node_view_multiple($nodes, 'teaser');
+  return node_title_list($nodes, $title = NULL);
+
+}
+
+
+
+/**
+ * Implements hook_block_info().
+ */
+function custom_content_block_info() {
+  $blocks = array();
+  $blocks['my_custom_block'] = array( 'info' => t('My Custom Block'), );
+  return $blocks;
+}
+
+/**
+ *  Implements hook_block_view().
+ */
+function custom_content_block_view($delta='') {
+  $block = array();
+  switch($delta) {
+    case 'my_custom_block' :
+    $block['content'] = custom_content_recent_articles();
+  }
+  return $blocks;
+}
+
+

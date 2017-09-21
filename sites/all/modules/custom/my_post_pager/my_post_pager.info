@@ -1,0 +1,10 @@
+name = My Post Pager
+description = Custom module  using pager
+core = 7.x 
+package= custom module
+version = "7.x-2.0.1"
+dependencies[] = views
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[views_view][] = my_pager_views
+features_exclude[dependencies][ctools] = ctools

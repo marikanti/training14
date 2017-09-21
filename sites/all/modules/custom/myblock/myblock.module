@@ -1,0 +1,58 @@
+<?php
+
+function myblock_block_info() {
+ $blocks = array();
+ $blocks['myblock']['info'] = t('MyBlock');
+ 	
+ 	return $blocks;
+ }
+
+function myblock_block_view($delta ='') {
+ $block = array();
+ switch($delta){
+     case 'myblock';
+        $block['subject'] = t('My Article Block');
+        $block['content'] = custom_block_list();
+        break;
+}
+    return $block;
+
+  }
+ 
+function custom_block_list() {
+     
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+        ->entityCondition('bundle', 'article')
+        ->propertyCondition('status', NODE_PUBLISHED)
+        ->propertyOrderBy('created', 'DESC')
+        ->range(0, 5);
+        
+
+  $result = $query->execute();
+
+  if(isset($result['node'])) {
+
+      $custom_items_nids = array_keys($result['node']);
+      $custom_items = entity_load('node',$custom_items_nids);
+  }
+  
+  $output = "<ul>\n";
+  foreach($custom_items as $custom_item){
+   $snippet = "<li>\n";
+   $snippet .= "<h2>".t($custom_item->title)."</h2>\n";
+   $output .= $snippet;
+ }
+   
+   $output .= "<ul>\n";
+   
+   return $output;
+  
+
+}
+
+
+
+ 
+
+  
