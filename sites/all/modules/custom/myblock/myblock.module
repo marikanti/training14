@@ -2,6 +2,7 @@
 /* This is the Comment */
 function myblock_block_info() {
  $blocks = array();
+ /*hdhdhd*/
  $blocks['myblock']['info'] = t('MyBlock');
  	
  	return $blocks;
